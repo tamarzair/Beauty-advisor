@@ -7,7 +7,7 @@ struct BaddieBlueprintApp: App {
         WindowGroup {
             MainContainerView()
         }
-        .modelContainer(for: [UserProfile.self, DailyLog.self, RoutineTask.self, FridgeItem.self])
+        .modelContainer(for: [UserProfile.self, DailyLog.self, RoutineTask.self, FridgeItem.self, MaintenanceCycle.self])
     }
 }
 
@@ -52,6 +52,11 @@ struct MainTabView: View {
             SleepTrackerView()
                 .tabItem {
                     Label("Sleep", systemImage: "moon.zzz")
+                }
+
+            MaintenanceScheduleView()
+                .tabItem {
+                    Label("Maintenance", systemImage: "calendar.badge.clock")
                 }
         }
         .tint(.pink)
