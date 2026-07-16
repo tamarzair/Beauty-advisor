@@ -2,7 +2,8 @@ import Foundation
 import WidgetKit
 
 struct SharedDefaults {
-    static let appGroupID = "group.com.yourname.BaddieBlueprint" // Update with your actual group ID
+    // Must exactly match the App Group entitlement on both targets (see project.yml).
+    static let appGroupID = "group.com.tamarzair.baddieblueprint"
 
     static func writeWidgetData(appearance: String, mood: String, completionRate: Double) {
         guard let defaults = UserDefaults(suiteName: appGroupID) else { return }
