@@ -76,13 +76,11 @@ struct VisionAnalysisView: View {
 
                     if let analysisResult {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Analysis")
-                                .font(.title3.bold())
                             Text(analysisResult.summary)
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                            Text(analysisResult.recommendations)
                                 .font(.system(.body, design: .serif))
-                            ForEach(analysisResult.recommendations, id: \.self) { recommendation in
-                                Label(recommendation, systemImage: "checkmark.circle")
-                            }
                         }
                         .padding()
                         .background(Color(.secondarySystemBackground))

@@ -37,7 +37,7 @@ class CompanionEngine: ObservableObject {
         // 2. Evaluate Dynamic Routine Task Completion Percentage
         let tasks = log.requiredTasks
         guard !tasks.isEmpty else {
-            setStates(for: .neglected)
+            setStates(for: .neglected, completionRate: 0)
             return
         }
 
@@ -59,10 +59,10 @@ class CompanionEngine: ObservableObject {
             calculatedMood = .neglected
         }
 
-        setStates(for: calculatedMood)
+        setStates(for: calculatedMood, completionRate: completionRate)
     }
 
-    private func setStates(for mood: CompanionMood) {
+    private func setStates(for mood: CompanionMood, completionRate: Double) {
         self.currentMood = mood
         switch mood {
         case .glowing, .thriving:
@@ -72,5 +72,12 @@ class CompanionEngine: ObservableObject {
         case .struggling, .neglected:
             appearanceState = .bummy
         }
+
+        // Sync state to shared container for Widget access
+        SharedDefaults.writeWidgetData(
+            appearance: String(describing: appearanceState),
+            mood: String(describing: currentMood),
+            completionRate: completionRate
+        )
     }
 }

@@ -30,20 +30,23 @@ enum PhotoRequirement: String, CaseIterable, Identifiable {
     }
 }
 
-struct VisionAnalysisRequest: Encodable {
-    let requirement: String
-    let imageBase64: String
+struct VisionAnalysisProfilePayload: Encodable {
+    let name: String
     let heightInches: Double
     let bodyType: String
     let skinUndertone: String
     let hairType: String
-    let calorieGoal: Int
-    let weightGoal: Int
+}
+
+struct VisionAnalysisRequest: Encodable {
+    let imageBase64: String
+    let photoRequirement: String
+    let profile: VisionAnalysisProfilePayload
 }
 
 struct VisionAnalysisResponse: Decodable {
     let summary: String
-    let recommendations: [String]
+    let recommendations: String
 }
 
 enum VisionAPIError: LocalizedError {
@@ -64,8 +67,8 @@ enum VisionAPIError: LocalizedError {
 /// the Anthropic API key and calls Claude server-side — the app never embeds
 /// a raw key or calls the Anthropic API directly.
 struct VisionAPIClient {
-    /// ⚠️ Point this at your backend proxy endpoint before shipping.
-    static var endpoint = URL(string: "https://your-backend.example.com/v1/vision-analysis")!
+    /// ⚠️ Point this at your deployed Cloudflare Worker URL before shipping.
+    static var endpoint = URL(string: "https://your-cloudflare-worker-subdomain.workers.dev")!
 
     static func analyze(
         image: UIImage,
@@ -77,14 +80,15 @@ struct VisionAPIClient {
         }
 
         let payload = VisionAnalysisRequest(
-            requirement: requirement.rawValue,
             imageBase64: imageData.base64EncodedString(),
-            heightInches: profile.heightInches,
-            bodyType: profile.bodyType,
-            skinUndertone: profile.skinUndertone,
-            hairType: profile.hairType,
-            calorieGoal: profile.calorieGoal,
-            weightGoal: profile.weightGoal
+            photoRequirement: requirement.rawValue,
+            profile: VisionAnalysisProfilePayload(
+                name: profile.name,
+                heightInches: profile.heightInches,
+                bodyType: profile.bodyType,
+                skinUndertone: profile.skinUndertone,
+                hairType: profile.hairType
+            )
         )
 
         var request = URLRequest(url: endpoint)
