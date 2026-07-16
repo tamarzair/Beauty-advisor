@@ -3,13 +3,11 @@ import SwiftData
 
 @Model
 final class FridgeItem {
-    var id: UUID
     var name: String
-    var quantity: Int
+    var quantity: Double
     var addedAt: Date
 
-    init(id: UUID = UUID(), name: String, quantity: Int = 1, addedAt: Date = .now) {
-        self.id = id
+    init(name: String, quantity: Double = 1.0, addedAt: Date = Date()) {
         self.name = name
         self.quantity = quantity
         self.addedAt = addedAt
