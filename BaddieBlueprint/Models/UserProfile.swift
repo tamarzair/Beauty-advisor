@@ -3,31 +3,29 @@ import SwiftData
 
 @Model
 final class UserProfile {
-    var id: UUID
     var name: String
     var heightInches: Double
     var bodyType: String
     var skinUndertone: String
     var hairType: String
     var calorieGoal: Int
-    var createdAt: Date
+    var weightGoal: Int
 
     init(
-        id: UUID = UUID(),
-        name: String,
-        heightInches: Double,
-        bodyType: String,
-        skinUndertone: String,
-        hairType: String,
-        calorieGoal: Int
+        name: String = "",
+        heightInches: Double = 64.0,
+        bodyType: String = "",
+        skinUndertone: String = "",
+        hairType: String = "",
+        calorieGoal: Int = 1800,
+        weightGoal: Int = 140
     ) {
-        self.id = id
         self.name = name
         self.heightInches = heightInches
         self.bodyType = bodyType
         self.skinUndertone = skinUndertone
         self.hairType = hairType
         self.calorieGoal = calorieGoal
-        self.createdAt = .now
+        self.weightGoal = weightGoal
     }
 }

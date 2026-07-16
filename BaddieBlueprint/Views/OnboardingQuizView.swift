@@ -94,34 +94,45 @@ struct OnboardingQuizView: View {
     }
 
     private func saveProfileAndComplete() {
-        let calculatedCalories: Int
+        // 1. Calculate Activity Modifier
+        let activityModifier: Int
         switch activityLevel {
-        case "Sedentary": calculatedCalories = 1400
-        case "Lightly Active": calculatedCalories = 1600
-        case "Moderately Active": calculatedCalories = 1900
-        case "Very Active": calculatedCalories = 2200
-        default: calculatedCalories = 1800
+        case "Sedentary":
+            activityModifier = 200
+        case "Lightly Active":
+            activityModifier = 400
+        case "Moderately Active":
+            activityModifier = 600
+        case "Very Active":
+            activityModifier = 800
+        default:
+            activityModifier = 400
         }
 
+        // 2. Calculate Caloric Goal anchored to Weight Goal
+        let calculatedCalories = (weightGoal * 10) + activityModifier
+
+        // 3. Construct and Insert User Profile
         let newProfile = UserProfile(
             name: name,
             heightInches: heightInches,
             bodyType: selectedBodyType,
             skinUndertone: selectedUndertone,
             hairType: selectedHairType,
-            calorieGoal: calculatedCalories
+            calorieGoal: calculatedCalories,
+            weightGoal: weightGoal
         )
 
         modelContext.insert(newProfile)
 
-        // Seed the initial log using the SharedPersistence layer
+        // 4. Seed dynamic log tracking
         _ = SharedPersistence.todayLog(in: modelContext)
 
         do {
             try modelContext.save()
             dismiss()
         } catch {
-            print("Failed to save UserProfile: \(error.localizedDescription)")
+            print("Failed to persist onboarding configurations: \(error.localizedDescription)")
         }
     }
 }
