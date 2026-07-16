@@ -1,40 +1,76 @@
-//
-//  CompanionEngine.swift
-//  Baddie Blueprint
-//
-//  UI-facing adapter over CompanionMood/RoutineCycle for views that only
-//  care about a coarse 3-tier appearance and the current time-of-day cycle.
-//
+import SwiftUI
 
-import Foundation
-import Combine
-
-enum CompanionAppearanceState {
-    case snatched
-    case maintenance
-    case bummy
+enum CompanionTimeState {
+    case morning, afternoon, night
 }
 
-typealias CompanionTimeState = RoutineCycle
+enum CompanionMood {
+    case glowing      // 100% execution
+    case thriving     // > 75% execution
+    case managing     // 40% - 75% execution
+    case struggling   // 15% - 40% execution
+    case neglected    // < 15% execution
+}
 
-@MainActor
-final class CompanionEngine: ObservableObject {
-    @Published private(set) var appearanceState: CompanionAppearanceState = .maintenance
-    @Published private(set) var timeState: CompanionTimeState = .morning
+enum CompanionAppearanceState {
+    case snatched     // Maps to glowing/thriving
+    case maintenance  // Maps to managing
+    case bummy        // Maps to struggling/neglected
+}
 
-    func updateState(for log: DailyLog, now: Date = .now) {
-        timeState = RoutineCycle.current(for: now)
-        appearanceState = Self.appearance(for: log.companionMood)
+class CompanionEngine: ObservableObject {
+    @Published var timeState: CompanionTimeState = .morning
+    @Published var currentMood: CompanionMood = .managing
+    @Published var appearanceState: CompanionAppearanceState = .maintenance
+
+    func updateState(for log: DailyLog) {
+        // 1. Determine Time of Day Cycle
+        let hour = Calendar.current.component(.hour, from: Date())
+        if hour >= 5 && hour < 12 {
+            timeState = .morning
+        } else if hour >= 12 && hour < 18 {
+            timeState = .afternoon
+        } else {
+            timeState = .night
+        }
+
+        // 2. Evaluate Dynamic Routine Task Completion Percentage
+        let tasks = log.requiredTasks
+        guard !tasks.isEmpty else {
+            setStates(for: .neglected)
+            return
+        }
+
+        let completedCount = tasks.filter { $0.isCompleted }.count
+        let completionRate = Double(completedCount) / Double(tasks.count)
+
+        // 3. Map to 5-Tier Mood
+        let calculatedMood: CompanionMood
+        switch completionRate {
+        case 1.0:
+            calculatedMood = .glowing
+        case 0.75..<1.0:
+            calculatedMood = .thriving
+        case 0.40..<0.75:
+            calculatedMood = .managing
+        case 0.15..<0.40:
+            calculatedMood = .struggling
+        default:
+            calculatedMood = .neglected
+        }
+
+        setStates(for: calculatedMood)
     }
 
-    private static func appearance(for mood: CompanionMood) -> CompanionAppearanceState {
+    private func setStates(for mood: CompanionMood) {
+        self.currentMood = mood
         switch mood {
-        case .snatched:
-            return .snatched
-        case .glowing, .coasting:
-            return .maintenance
-        case .tired, .bummy:
-            return .bummy
+        case .glowing, .thriving:
+            appearanceState = .snatched
+        case .managing:
+            appearanceState = .maintenance
+        case .struggling, .neglected:
+            appearanceState = .bummy
         }
     }
 }
