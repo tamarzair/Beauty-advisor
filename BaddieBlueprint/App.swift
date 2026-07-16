@@ -58,6 +58,11 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Maintenance", systemImage: "calendar.badge.clock")
                 }
+
+            VisionAnalysisView()
+                .tabItem {
+                    Label("Vision", systemImage: "camera.viewfinder")
+                }
         }
         .tint(.pink)
     }
