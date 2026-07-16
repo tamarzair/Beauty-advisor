@@ -23,7 +23,7 @@ struct MainContainerView: View {
                         showingOnboarding = true
                     }
             } else {
-                DashboardView()
+                MainTabView()
             }
         }
         .fullScreenCover(isPresented: $showingOnboarding) {
@@ -33,5 +33,27 @@ struct MainContainerView: View {
         .onChange(of: profiles.isEmpty) { _, isEmpty in
             showingOnboarding = isEmpty
         }
+    }
+}
+
+struct MainTabView: View {
+    var body: some View {
+        TabView {
+            DashboardView()
+                .tabItem {
+                    Label("Dashboard", systemImage: "sparkles")
+                }
+
+            FridgeView()
+                .tabItem {
+                    Label("Kitchen", systemImage: "refrigerator")
+                }
+
+            SleepTrackerView()
+                .tabItem {
+                    Label("Sleep", systemImage: "moon.zzz")
+                }
+        }
+        .tint(.pink)
     }
 }

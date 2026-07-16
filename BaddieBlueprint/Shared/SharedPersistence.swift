@@ -16,22 +16,6 @@ final class RoutineTask {
     }
 }
 
-@Model
-final class DailyLog {
-    var day: Date // Normalized to midnight
-    @Relationship(deleteRule: .cascade) var requiredTasks: [RoutineTask]
-    var caloriesConsumed: Int
-    var sleepScore: Double
-
-    init(day: Date = Date(), requiredTasks: [RoutineTask] = [], caloriesConsumed: Int = 0, sleepScore: Double = 0.0) {
-        // Normalize day to midnight for accurate daily grouping
-        self.day = Calendar.current.startOfDay(for: day)
-        self.requiredTasks = requiredTasks
-        self.caloriesConsumed = caloriesConsumed
-        self.sleepScore = sleepScore
-    }
-}
-
 // Global Manager for Safe Seeding and Retrieval
 struct SharedPersistence {
     static func todayLog(in context: ModelContext) -> DailyLog {

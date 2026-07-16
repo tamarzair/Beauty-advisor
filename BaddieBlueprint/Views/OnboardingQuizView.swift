@@ -21,7 +21,7 @@ struct OnboardingQuizView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            ProgressView(value: Double(currentStep + 1), total: 4.0)
+            ProgressView(value: Double(currentStep + 1), total: 5.0)
                 .tint(.pink)
                 .padding(.horizontal)
 
@@ -62,6 +62,8 @@ struct OnboardingQuizView: View {
                 activityLevel: $activityLevel,
                 activityLevels: activityLevels
             )
+        case 4:
+            CompletionStepView()
         default:
             EmptyView()
         }
@@ -79,8 +81,8 @@ struct OnboardingQuizView: View {
 
             Spacer()
 
-            Button(currentStep == 3 ? "Complete Profile" : "Continue") {
-                if currentStep < 3 {
+            Button(currentStep == 4 ? "Complete Profile" : "Continue") {
+                if currentStep < 4 {
                     withAnimation { currentStep += 1 }
                 } else {
                     saveProfileAndComplete()
